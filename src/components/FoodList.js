@@ -5,27 +5,29 @@ function formatDate(value) {
   return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}`;
 }
 
-function FoodListItem({ item }) {
+function FoodListItem({ item, onDelete }) {
   const { imgUrl, title, calorie, content, createdAt } = item;
+  const handleDeleteClick = () => onDelete(item.id);
 
   return (
-    <div>
+    <div className='FoodListItem'>
       <img src={imgUrl} alt={title} />
       <div>{title}</div>
       <div>{calorie}</div>
       <div>{content}</div>
       <div>{formatDate(createdAt)}</div>
+      <button onClick={handleDeleteClick}>삭제</button>
     </div>
   );
 }
 
-function FoodList({ items }) {
+function FoodList({ items, onDelete }) {
   return (
-    <ul>
+    <ul className='FoodList'>
       {items.map((item) => (
         // items라는 Prop의 요소마다 <li> 태그를 렌더링 // <li> 태그 안에는 FoodListItem을 렌더링
         <li key={item.id}>
-          <FoodListItem item={item} />
+          <FoodListItem item={item} onDelete={onDelete} />
         </li>
       ))}
     </ul>
