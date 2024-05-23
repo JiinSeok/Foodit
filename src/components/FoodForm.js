@@ -1,37 +1,51 @@
 import { useState } from "react";
 
 function FoodForm() {
-  const [title, setTitle] = useState("");
-  const [calorie, setCalorie] = useState(0);
-  const [content, setContent] = useState("");
+  const [values, setValues] = useState({
+    title: "",
+    calorie: 0,
+    content: "",
+  });
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
+  const sanitize = (type, value) => {
+    switch (type) {
+      case "number": // type이 number인 경우만 따로 처리
+        return Number(value) || 0;
+
+      default:
+        return value;
+    }
   };
 
-  const handleCalorieChange = (e) => {
-    const nextCalorie = Number(e.target.value) || 0;
-    setCalorie(nextCalorie);
+  const handleChange = (e) => {
+    const { name, value, type } = e.target; // e.target 값을 name 과 value 로 Destructuring
+    setValues((preValues) => ({
+      // 이 값을 활용해서 values 스테이트를 변경
+      ...preValues,
+      [name]: sanitize(type, value),
+    }));
   };
 
-  const handleContentChange = (e) => {
-    setContent(e.target.value);
+  const handleSubmit = (e) => {
+    e.preventDefault(); // submit 하면 값이 날아가는 HTML 폼의 기본 동작을 막아줌
+    console.log(values);
   };
 
   return (
-    <form>
-      <input name='title' value={title} onChange={handleTitleChange}></input>
+    <form onSubmit={handleSubmit}>
+      <input name='title' value={values.title} onChange={handleChange}></input>
       <input
         type='number'
         name='calorie'
-        value={calorie}
-        onChange={handleCalorieChange}
+        value={values.calorie}
+        onChange={handleChange}
       ></input>
       <input
         name='content'
-        value={content}
-        onChange={handleContentChange}
+        value={values.content}
+        onChange={handleChange}
       ></input>
+      <button type='submit'>확인</button>
     </form>
   );
 }
