@@ -2,8 +2,6 @@ import FoodList from "./FoodList";
 import { useEffect, useState } from "react";
 import { getFoods } from "../api"; // 함수 import
 
-export default App;
-
 function App() {
   const [items, setItems] = useState([]);
   const [order, setOrder] = useState("createdAt");
@@ -46,7 +44,7 @@ function App() {
   };
 
   const handleLoadMore = () => {
-    handleLoad({ order, cursor });
+    handleLoad({ order, cursor, search });
   };
 
   const handleSearchSubmit = async (e) => {
@@ -62,7 +60,7 @@ function App() {
   };
 
   useEffect(() => {
-    handleLoad({ order });
+    handleLoad({ order, search });
   }, [order, search]);
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
@@ -85,3 +83,5 @@ function App() {
     </div>
   );
 }
+
+export default App;
