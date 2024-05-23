@@ -2,10 +2,15 @@ import FoodList from "./FoodList";
 import { useEffect, useState } from "react";
 import { getFoods } from "../api"; // 함수 import
 
+export default App;
+
 function App() {
   const [items, setItems] = useState([]);
   const [order, setOrder] = useState("createdAt");
   const [cursor, setCursor] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingError, setLoadingError] = useState(null);
+  const [search, setSearch] = useState("");
 
   const handleNewestClick = () => setOrder("createdAt");
 
@@ -17,10 +22,21 @@ function App() {
   };
 
   const handleLoad = async (options) => {
+    let result;
+    try {
+      setIsLoading(true);
+      setLoadingError(null);
+      result = await getFoods(options);
+    } catch (error) {
+      setLoadingError(error);
+      return; // 에러 핸들링 후 undefined 반환하고 함수 실행 종료
+    } finally {
+      setIsLoading(false);
+    }
     const {
       foods,
       paging: { nextCursor },
-    } = await getFoods(options);
+    } = result;
     if (!options.cursor) {
       setItems(foods);
     } else {
@@ -33,9 +49,21 @@ function App() {
     handleLoad({ order, cursor });
   };
 
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    setSearch(e.target["search"].value); // search 스테이트 값을 인풋의 값으로 변경
+    handleLoad({ search });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.target.key === "Enter") {
+      handleSearchSubmit(e);
+    }
+  };
+
   useEffect(() => {
     handleLoad({ order });
-  }, [order]);
+  }, [order, search]);
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
@@ -43,10 +71,17 @@ function App() {
     <div>
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleBestClick}>칼로리순</button>
+      <form onSubmit={handleSearchSubmit}>
+        <input name='search' onKeyDown={handleKeyDown} />
+        <button type='submit'>검색</button>
+      </form>
       <FoodList items={sortedItems} onDelete={handleDelete} />
-      {cursor && <button onClick={handleLoadMore}>더 보기</button>}
+      {cursor && (
+        <button disabled={isLoading} onClick={handleLoadMore}>
+          더 보기
+        </button>
+      )}
+      {loadingError?.message && <span>{loadingError.message}</span>}
     </div>
   );
 }
-
-export default App;

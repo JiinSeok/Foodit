@@ -1,4 +1,10 @@
-export async function getFoods({ order = "", cursor = "", limit = 10 }) {
+export async function getFoods({
+  order = "",
+  cursor = "",
+  limit = 10,
+  search = "",
+}) {
+  // const query = `order=${order}&cursor=${cursor}&limit=${limit}&search=${search}`;
   let query = "";
   if (order) {
     query += `order=${order}`;
@@ -9,8 +15,13 @@ export async function getFoods({ order = "", cursor = "", limit = 10 }) {
   if (limit > 0) {
     query += `&limit=${limit}`;
   }
-  // const query = `order=${order}&cursor=${cursor}&limit=${limit}`;
+  if (search) {
+    query += `&search=${search}`;
+  }
   const response = await fetch(`https://learn.codeit.kr/0220/foods/?${query}`);
+  if (!response.ok) {
+    throw new Error("데이터를 불러오는 데 실패했습니다.");
+  }
   const body = response.json();
   return body;
 }
