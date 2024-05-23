@@ -1,6 +1,7 @@
 import FoodList from "./FoodList";
 import { useEffect, useState } from "react";
 import { getFoods } from "../api"; // 함수 import
+import FoodForm from "./FoodForm";
 
 function App() {
   const [items, setItems] = useState([]);
@@ -67,6 +68,7 @@ function App() {
 
   return (
     <div>
+      <FoodForm />
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleBestClick}>칼로리순</button>
       <form onSubmit={handleSearchSubmit}>
