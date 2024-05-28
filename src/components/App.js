@@ -60,6 +60,10 @@ function App() {
     }
   };
 
+  const handleSubmitSuccess = (newItem) => {
+    setItems((prevItems) => [newItem, ...prevItems]);
+  }
+
   useEffect(() => {
     handleLoad({ order, search });
   }, [order, search]);
@@ -68,7 +72,7 @@ function App() {
 
   return (
     <div>
-      <FoodForm />
+      <FoodForm onSubmitSuccess={handleSubmitSuccess} />
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleBestClick}>칼로리순</button>
       <form onSubmit={handleSearchSubmit}>
