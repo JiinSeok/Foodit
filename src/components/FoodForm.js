@@ -1,17 +1,17 @@
-import { useState } from "react";
-import FileInput from "./FileInput";
-import { createFood } from "../api";
+import { useState } from 'react';
+import FileInput from './FileInput';
+import { createFood } from '../api';
 
 const INITIAL_VALUES = {
   imgFile: null,
-  title: "",
+  title: '',
   calorie: 0,
-  content: "",
-}
+  content: '',
+};
 
 const sanitize = (type, value) => {
   switch (type) {
-    case "number": // type이 number인 경우만 따로 처리
+    case 'number': // type이 number인 경우만 따로 처리
       return Number(value) || 0;
 
     default:
@@ -19,8 +19,14 @@ const sanitize = (type, value) => {
   }
 };
 
-function FoodForm({ onSubmitSuccess }) {
-  const [values, setValues] = useState(INITIAL_VALUES);
+function FoodForm({
+  initialPreview,
+  initialValues = INITIAL_VALUES,
+  onSubmit,
+  onSubmitSuccess,
+  onCancel,
+}) {
+  const [values, setValues] = useState(initialValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittingError, setSubmittingError] = useState(null);
 
@@ -49,41 +55,49 @@ function FoodForm({ onSubmitSuccess }) {
     try {
       setSubmittingError(null);
       setIsSubmitting(true);
-      result = await createFood(formData); 
+      result = await onSubmit(formData); // createFood 또는
     } catch (error) {
       setSubmittingError(error);
     } finally {
       setIsSubmitting(false);
     }
     const { food } = result;
-    onSubmitSuccess(food);
+    onSubmitSuccess(food); // handleCreateSuccess 또는
     setValues(INITIAL_VALUES);
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <FileInput
-        name='imgFile'
+        name="imgFile"
+        initialPreview={initialPreview}
         value={values.imgFile}
         onChange={handleChange}
       />
       <input
-        name='title'
+        name="title"
         value={values.title}
         onChange={handleInputChange}
       ></input>
       <input
-        type='number'
-        name='calorie'
+        type="number"
+        name="calorie"
         value={values.calorie}
         onChange={handleInputChange}
       ></input>
       <input
-        name='content'
+        name="content"
         value={values.content}
         onChange={handleInputChange}
       ></input>
-      <button type='submit' disabled={isSubmitting}>확인</button>
+      <button type="submit" disabled={isSubmitting}>
+        확인
+      </button>
+      {onCancel && ( // handleCancel
+        <button type="button" onClick={onCancel}>
+          취소
+        </button>
+      )}
       {submittingError?.message && <div>{submittingError.message}</div>}
     </form>
   );

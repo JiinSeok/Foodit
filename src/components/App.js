@@ -1,19 +1,19 @@
-import FoodList from "./FoodList";
-import { useEffect, useState } from "react";
-import { getFoods } from "../api"; // 함수 import
-import FoodForm from "./FoodForm";
+import FoodList from './FoodList';
+import { useEffect, useState } from 'react';
+import { createFood, updateFood, getFoods } from '../api'; // 함수 import
+import FoodForm from './FoodForm';
 
 function App() {
   const [items, setItems] = useState([]);
-  const [order, setOrder] = useState("createdAt");
+  const [order, setOrder] = useState('createdAt');
   const [cursor, setCursor] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
-  const handleNewestClick = () => setOrder("createdAt");
+  const handleNewestClick = () => setOrder('createdAt');
 
-  const handleBestClick = () => setOrder("calorie");
+  const handleBestClick = () => setOrder('calorie');
 
   const handleDelete = (id) => {
     const nextItems = items.filter((item) => item.id !== id);
@@ -48,21 +48,32 @@ function App() {
     handleLoad({ order, cursor, search });
   };
 
+  const handleCreateSuccess = (food) => {
+    setItems((prevItems) => [food, ...prevItems]);
+  };
+
+  const handleUpdateSuccess = (food) => {
+    setItems((prevItems) => {
+      const splitIdx = prevItems.findIndex((item) => item.id === food.id);
+      return [
+        ...prevItems.slice(0, splitIdx),
+        food,
+        ...prevItems.slice(splitIdx + 1),
+      ];
+    });
+  };
+
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    setSearch(e.target["search"].value); // search 스테이트 값을 인풋의 값으로 변경
+    setSearch(e.target['search'].value); // search 스테이트 값을 인풋의 값으로 변경
     handleLoad({ search });
   };
 
   const handleKeyDown = (e) => {
-    if (e.target.key === "Enter") {
+    if (e.target.key === 'Enter') {
       handleSearchSubmit(e);
     }
   };
-
-  const handleSubmitSuccess = (newItem) => {
-    setItems((prevItems) => [newItem, ...prevItems]);
-  }
 
   useEffect(() => {
     handleLoad({ order, search });
@@ -72,14 +83,19 @@ function App() {
 
   return (
     <div>
-      <FoodForm onSubmitSuccess={handleSubmitSuccess} />
+      <FoodForm onSubmit={createFood} onSubmitSuccess={handleCreateSuccess} />
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleBestClick}>칼로리순</button>
       <form onSubmit={handleSearchSubmit}>
-        <input name='search' onKeyDown={handleKeyDown} />
-        <button type='submit'>검색</button>
+        <input name="search" onKeyDown={handleKeyDown} />
+        <button type="submit">검색</button>
       </form>
-      <FoodList items={sortedItems} onDelete={handleDelete} />
+      <FoodList
+        items={sortedItems}
+        onUpdate={updateFood}
+        onUpdateSuccess={handleUpdateSuccess}
+        onDelete={handleDelete}
+      />
       {cursor && (
         <button disabled={isLoading} onClick={handleLoadMore}>
           더 보기
