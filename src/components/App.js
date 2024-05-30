@@ -1,6 +1,6 @@
 import FoodList from "./FoodList";
 import { useEffect, useState } from "react";
-import { getFoods } from "../api"; // 함수 import
+import { createFood, deleteFood, getFoods } from "../api"; // 함수 import
 import FoodForm from "./FoodForm";
 import { LocaleProvider } from "../contexts/LocaleContext";
 import LocaleSelect from "./LocaleSelect";
@@ -16,6 +16,8 @@ function App() {
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
   const handleBestClick = () => setOrder('calorie');
+
+  const handleNewestClick = () => setOrder('createdAt');
 
   const handleDelete = async (id) => {
     const result = await deleteFood(id);
@@ -83,13 +85,11 @@ function App() {
     handleLoad({ order, search });
   }, [order, search]);
 
-
-
   return (
     <LocaleProvider defaultValue={'ko'}>
       <div>
         <LocaleSelect />
-        <FoodForm onSubmitSuccess={handleSubmitSuccess} />
+        <FoodForm onSubmit={createFood} onSubmitSuccess={handleCreateSuccess} />
         <button onClick={handleNewestClick}>최신순</button>
         <button onClick={handleBestClick}>칼로리순</button>
         <form onSubmit={handleSearchSubmit}>

@@ -3,12 +3,13 @@ import "./FoodList.css";
 import useTranslate from "../hooks/useTranslate";
 import FoodForm from "./FoodForm";
 
+export default FoodList;
+
 function formatDate(value) {
   const date = new Date(value);
   return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}`;
 }
 
-function FoodListItem({ item, onEdit, onDelete }) {
 function FoodListItem({ item, onEdit, onDelete }) {
   const { imgUrl, title, calorie, content, createdAt } = item;
 
@@ -37,14 +38,6 @@ function FoodListItem({ item, onEdit, onDelete }) {
 
 function FoodList({ items, onUpdate, onUpdateSuccess, onDelete }) {
   const [editingId, setEditingId] = useState(null);
-
-  const handleCancel = () => {
-    setEditingId(null);
-  };
-
-function FoodList({ items, onUpdate, onUpdateSuccess, onDelete }) {
-  const [editingId, setEditingId] = useState(null);
-
   const handleCancel = () => {
     setEditingId(null);
   };
@@ -84,5 +77,3 @@ function FoodList({ items, onUpdate, onUpdateSuccess, onDelete }) {
     </ul>
   );
 }
-
-export default FoodList;
