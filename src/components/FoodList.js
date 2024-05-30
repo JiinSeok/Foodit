@@ -9,6 +9,7 @@ function formatDate(value) {
 }
 
 function FoodListItem({ item, onEdit, onDelete }) {
+function FoodListItem({ item, onEdit, onDelete }) {
   const { imgUrl, title, calorie, content, createdAt } = item;
 
   const t = useTranslate();
@@ -22,7 +23,7 @@ function FoodListItem({ item, onEdit, onDelete }) {
   };
 
   return (
-    <div className='FoodListItem'>
+    <div className="FoodListItem">
       <img src={imgUrl} alt={title} />
       <div>{title}</div>
       <div>{calorie}</div>
@@ -33,6 +34,13 @@ function FoodListItem({ item, onEdit, onDelete }) {
     </div>
   );
 }
+
+function FoodList({ items, onUpdate, onUpdateSuccess, onDelete }) {
+  const [editingId, setEditingId] = useState(null);
+
+  const handleCancel = () => {
+    setEditingId(null);
+  };
 
 function FoodList({ items, onUpdate, onUpdateSuccess, onDelete }) {
   const [editingId, setEditingId] = useState(null);

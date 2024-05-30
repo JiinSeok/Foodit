@@ -7,7 +7,7 @@ import LocaleSelect from "./LocaleSelect";
 
 function App() {
   const [items, setItems] = useState([]);
-  const [order, setOrder] = useState("createdAt");
+  const [order, setOrder] = useState('createdAt');
   const [cursor, setCursor] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
@@ -15,13 +15,13 @@ function App() {
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
-  const handleNewestClick = () => setOrder("createdAt");
+  const handleBestClick = () => setOrder('calorie');
 
-  const handleBestClick = () => setOrder("calorie");
+  const handleDelete = async (id) => {
+    const result = await deleteFood(id);
+    if (!result) return;
 
-  const handleDelete = (id) => {
-    const nextItems = items.filter((item) => item.id !== id);
-    setItems(nextItems);
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   const handleLoad = async (options) => {
@@ -52,21 +52,32 @@ function App() {
     handleLoad({ order, cursor, search });
   };
 
+  const handleCreateSuccess = (food) => {
+    setItems((prevItems) => [food, ...prevItems]);
+  };
+
+  const handleUpdateSuccess = (food) => {
+    setItems((prevItems) => {
+      const splitIdx = prevItems.findIndex((item) => item.id === food.id);
+      return [
+        ...prevItems.slice(0, splitIdx),
+        food,
+        ...prevItems.slice(splitIdx + 1),
+      ];
+    });
+  };
+
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    setSearch(e.target["search"].value); // search 스테이트 값을 인풋의 값으로 변경
+    setSearch(e.target['search'].value); // search 스테이트 값을 인풋의 값으로 변경
     handleLoad({ search });
   };
 
   const handleKeyDown = (e) => {
-    if (e.target.key === "Enter") {
+    if (e.target.key === 'Enter') {
       handleSearchSubmit(e);
     }
   };
-
-  const handleSubmitSuccess = (newItem) => {
-    setItems((prevItems) => [newItem, ...prevItems]);
-  }
 
   useEffect(() => {
     handleLoad({ order, search });
