@@ -2,6 +2,8 @@ import FoodList from "./FoodList";
 import { useEffect, useState } from "react";
 import { getFoods } from "../api"; // 함수 import
 import FoodForm from "./FoodForm";
+import { LocaleProvider } from "../contexts/LocaleContext";
+import LocaleSelect from "./LocaleSelect";
 
 function App() {
   const [items, setItems] = useState([]);
@@ -10,6 +12,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
   const [search, setSearch] = useState("");
+
+  const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
   const handleNewestClick = () => setOrder("createdAt");
 
@@ -68,25 +72,28 @@ function App() {
     handleLoad({ order, search });
   }, [order, search]);
 
-  const sortedItems = items.sort((a, b) => b[order] - a[order]);
+
 
   return (
-    <div>
-      <FoodForm onSubmitSuccess={handleSubmitSuccess} />
-      <button onClick={handleNewestClick}>최신순</button>
-      <button onClick={handleBestClick}>칼로리순</button>
-      <form onSubmit={handleSearchSubmit}>
-        <input name='search' onKeyDown={handleKeyDown} />
-        <button type='submit'>검색</button>
-      </form>
-      <FoodList items={sortedItems} onDelete={handleDelete} />
-      {cursor && (
-        <button disabled={isLoading} onClick={handleLoadMore}>
-          더 보기
-        </button>
-      )}
-      {loadingError?.message && <span>{loadingError.message}</span>}
-    </div>
+    <LocaleProvider defaultValue={'ko'}>
+      <div>
+        <LocaleSelect />
+        <FoodForm onSubmitSuccess={handleSubmitSuccess} />
+        <button onClick={handleNewestClick}>최신순</button>
+        <button onClick={handleBestClick}>칼로리순</button>
+        <form onSubmit={handleSearchSubmit}>
+          <input name='search' onKeyDown={handleKeyDown} />
+          <button type='submit'>검색</button>
+        </form>
+        <FoodList items={sortedItems} onDelete={handleDelete} />
+        {cursor && (
+          <button disabled={isLoading} onClick={handleLoadMore}>
+            더 보기
+          </button>
+        )}
+        {loadingError?.message && <span>{loadingError.message}</span>}
+      </div>
+    </LocaleProvider>
   );
 }
 
